@@ -17,5 +17,6 @@
                 }
             }
         }
-    }
+    },
+    "postCreateCommand": "pip install -r /workspaces/price-scraper-est/requirements-dev.txt"
 }
