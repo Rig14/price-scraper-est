@@ -20,7 +20,8 @@ class Product:
         self.price_per_unit = price_per_unit['price']
         self.unit = price_per_unit['unit']
         self.category = category
-        self.weight = price / self.price_per_unit
+        self.weight = round(price / self.price_per_unit,
+                            3 if self.unit != "tk" else 0)
 
     def __str__(self):
         return f"{self.name}"
