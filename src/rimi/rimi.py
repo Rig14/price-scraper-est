@@ -10,6 +10,8 @@ E_STORE_URL = BASE_URL + "/epood"
 CATEGORY_ID = "desktop_category_menu_"
 # 1 indexed (1..19)
 CATEGORY_N = 19
+# page querry for the category page
+PAGE_QUERRY = "?page=1&pageSize=80"
 
 
 def get_category_urls():
