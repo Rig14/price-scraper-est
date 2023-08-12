@@ -1,6 +1,9 @@
-from src.rimi.rimi import get_category_urls
+"""Test the rimi module."""
+
 import random
 import requests
+
+from src.rimi.rimi import get_category_urls
 
 
 CATEGORY_URL_TESTS = 5
@@ -13,6 +16,6 @@ def test_category_urls():
     random.shuffle(category_urls)
 
     for url in category_urls[:CATEGORY_URL_TESTS]:
-        r = requests.get(url, timeout=10)
-        assert r.status_code == 200
-        assert r.url == url
+        request = requests.get(url, timeout=10)
+        assert request.status_code == 200
+        assert request.url == url
