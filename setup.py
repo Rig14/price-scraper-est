@@ -1,5 +1,6 @@
-from setuptools import find_packages, setup
+"""Setup file for python library"""
 
+from setuptools import find_packages, setup
 setup(
     name='EstPriceScraper',
     packages=find_packages(where="./src"),
