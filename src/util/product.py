@@ -20,7 +20,7 @@ class Product:
         self.price_per_unit = price_per_unit['price']
         self.unit = price_per_unit['unit']
         self.category = category
-        self.weight = price * 100 // self.price_per_unit
+        self.weight = price / self.price_per_unit
 
     def __str__(self):
         return f"{self.name}"
