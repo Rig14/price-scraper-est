@@ -1,5 +1,7 @@
 """Rimi webpage scraper"""
 
+from bs4 import BeautifulSoup
+
 base_url = "https://www.rimi.ee/epood"
 
 # id of ul element containing category links
