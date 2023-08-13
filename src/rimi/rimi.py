@@ -30,7 +30,7 @@ def get_category_urls():
 
 
 # page querry for the category page
-PAGE_SIZE = 80
+PAGE_SIZE = 100
 PRODUCT_CONTAINER_CLASS = "card__details"
 PRICE_CONTAINER_CLASS = "price-tag"
 UNIT_PRICE_CLASS = "card__price-per"

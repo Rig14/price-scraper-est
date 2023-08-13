@@ -31,13 +31,24 @@ class Product:
         self.weight_unit = price_per_unit["weigth_unit"]
         self.store = product_info["store"]
 
-    def __str__(self):
-        return f"{self.name}"
+    def get_cacheable(self):
+        """Get the cacheable version of the product"""
+        return f"{self.name}|{self.price}|{self.weight}|{self.category}|{self.price_per_unit}|{self.weight_unit}|{self.store}"
 
-    def get_price(self):
-        """Return the price of the product"""
-        return f"{self.price}€ ({self.price_per_unit}€/{self.weight_unit})"
-
-    def get_cache(self):
-        """Return the cache string"""
-        return f"{self.name} {self.price} {self.weight} {self.category} {self.price_per_unit} {self.weight_unit} {self.store}"
+    @staticmethod
+    def convert_cache_to_product(cache: str):
+        """Convert a cache string to a product"""
+        cache = cache.split("|")
+        return Product(
+            {
+                "name": cache[0],
+                "price": float(cache[1]),
+                "weight": float(cache[2]),
+                "category": cache[3],
+                "store": cache[6]
+            },
+            {
+                "price": float(cache[4]),
+                "weigth_unit": cache[5]
+            }
+        )

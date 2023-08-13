@@ -1,9 +1,9 @@
 """Scraper for getting the prices of products from different stores"""
 
-import time
-from os.path import exists
+import os
+from typing import Callable
 
-from src.util.product import Product
+from src.util.cacher import Cache
 from src.rimi.rimi import get_rimi_products
 
 
@@ -13,27 +13,30 @@ class PriceScraper():
 
     def __init__(self):
         self._cache = True
-        self._cache_timeout = 60 * 60 * 24 * 2  # 2 days
         self._available_providers = ["rimi"]
         self._used_providers = self._available_providers
+        # maps provider names to product getter functions
+        self._provider_functions_map = {
+            "rimi": get_rimi_products
+        }
 
-    def set_cache(self, cache: bool, **kwargs):
-        """Tweak settings related to caching
+    def set_use_cache(self, cache: bool):
+        """Set whether to use cache or not (default: True)
 
         Parameters:
-            cache (bool): whether to use cache or not (default: True)
-        Kwargs:
-            cache_timeout (int): how long to cache the data in seconds (default: 2 days)
+            cache (bool): whether to use cache or not
         """
         self._cache = cache
-        self._cache_timeout = kwargs.get("cache_timeout", self._cache_timeout)
 
-    def set_used_providers(self, providers: list[str]):
+    def set_used_providers(self, providers: list[str] | str):
         """Set the providers to use (default: all available providers)
 
         Parameters:
             providers (list[str]): the providers to use
         """
+        # if string converts into list
+        if isinstance(providers, str):
+            providers = [providers]
         # check if the providers are available
         for provider in providers:
             if provider not in self._available_providers:
@@ -41,75 +44,35 @@ class PriceScraper():
 
         self._used_providers = providers
 
-    def get_products(self) -> list[Product]:
-        """Return a list of products from a provider
+    def get_products(self):
+        """Get all products from all providers
 
-        Parameters:
-            provider (str): the provider to use
+        Returns:
+            list[Product]: the products
         """
-        products = []
+        cache = Cache(os.getcwd())
+        # check if cache is enabled
         if self._cache:
-            try:
-                products = self._get_cached_products()
-            except ValueError:
-                pass
+            # get the cache
+            cached_products = cache.get_cache(self._used_providers)
+            if cached_products is not None:
+                return cached_products
 
-        if not products:
-            for provider in self._used_providers:
-                if provider == "rimi":
-                    products.extend(get_rimi_products())
-
-            if self._cache:
-                self._cache_products(products)
-
+        # get the products by scraping if there is no cache or the cache is invalid
+        products = []
+        for provider in self._used_providers:
+            products.extend(self._provider_functions_map[provider]())
+        # cache the products
+        if self._cache:
+            cache.cache_products(products, self._used_providers)
         return products
 
-    def _cache_products(self, products: list[Product]):
-        """Cache the products
+    def modify_provider_function_map(self, modifyed_map: dict[str, Callable]):
+        """ATTENTION: FOR TESTING PURPOSES ONLY
+
+        Modify the provider-function map
 
         Parameters:
-            products (list[Product]): the products to cache
+            modifyed_map (dict[str, function]): the new map
         """
-        with open(self._CACHE_FILE_NAME, "w", encoding="UTF-8") as file:
-            # timestamp on top of the file - unix time in seconds
-            file.write(str(int(time.time())) + "\n")
-            # used providers
-            file.write(" ".join(self._used_providers) + "\n")
-            # products
-            for product in products:
-                file.write(product.get_cache() + "\n")
-
-    def _get_cached_products(self):
-        """Return the cached products"""
-        products = []
-
-        if not exists(self._CACHE_FILE_NAME):
-            raise ValueError("Cache file does not exist")
-
-        with open(self._CACHE_FILE_NAME, "r", encoding="UTF-8") as file:
-            timestamp = int(file.readline())
-            # check if the cache is too old
-            if timestamp + self._cache_timeout < int(time.time()):
-                raise ValueError("Cache is too old")
-            # used providers
-            providers = file.readline()
-            # check if the used providers are the same
-            if providers != " ".join(self._used_providers):
-                raise ValueError("Used providers are not the same")
-
-            # products
-            for line in file.readlines():
-                product_info = line.split(" ")
-                product = Product({
-                    "name": product_info[0],
-                    "price": float(product_info[1]),
-                    "weight": float(product_info[2]),
-                    "category": product_info[3],
-                    "store": product_info[6]
-                }, {
-                    "price": float(product_info[4]),
-                    "weigth_unit": product_info[5]
-                })
-                products.append(product)
-
-        return products
+        self._provider_functions_map = modifyed_map
