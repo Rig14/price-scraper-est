@@ -93,3 +93,12 @@ def get_all_products_from_category(category_url):
         products.extend(page_products)
         page += 1
     return products
+
+
+def get_rimi_products():
+    """Return a list of all products from all categories"""
+    products = []
+    category_urls = get_category_urls()
+    for category_url in category_urls:
+        products.extend(get_all_products_from_category(category_url))
+    return products
