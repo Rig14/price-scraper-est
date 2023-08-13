@@ -9,7 +9,6 @@ from src.rimi.rimi import get_rimi_products
 
 class PriceScraper():
     """Price scraper class"""
-    _CACHE_FILE_NAME = "EstPriceScraper.cache"
 
     def __init__(self):
         self._cache = True
