@@ -15,6 +15,7 @@ class ProductInfo(TypedDict):
     price: int
     weight: float
     category: str
+    store: str
 
 
 class Product:
@@ -28,6 +29,7 @@ class Product:
 
         self.price_per_unit = price_per_unit["price"]
         self.weight_unit = price_per_unit["weigth_unit"]
+        self.store = product_info["store"]
 
     def __str__(self):
         return f"{self.name}"
@@ -35,3 +37,7 @@ class Product:
     def get_price(self):
         """Return the price of the product"""
         return f"{self.price}€ ({self.price_per_unit}€/{self.weight_unit})"
+
+    def get_cache(self):
+        """Return the cache string"""
+        return f"{self.name} {self.price} {self.weight} {self.category} {self.price_per_unit} {self.weight_unit} {self.store}"
