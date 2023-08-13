@@ -47,11 +47,17 @@ def get_products_from_category_url(category_url, page):
     product_conatiners = soup.find_all(
         "div", {"class": PRODUCT_CONTAINER_CLASS})
 
+    if product_conatiners is None or product_conatiners == []:
+        return products
+
     for product in product_conatiners:
         name = product.find("p").text
 
         price_conatiner = product.find(
             "div", {"class": PRICE_CONTAINER_CLASS})
+
+        if price_conatiner is None:
+            continue
 
         # price is in the form of price_main.price_decimal
         price_main = int(price_conatiner.find("span").text)
@@ -73,4 +79,17 @@ def get_products_from_category_url(category_url, page):
 
         products.append(Product(product_info, product_unit_info))
 
+    return products
+
+
+def get_all_products_from_category(category_url):
+    """Return a list of all products from a category url"""
+    products = []
+    page = 1
+    while True:
+        page_products = get_products_from_category_url(category_url, page)
+        if len(page_products) == 0:
+            break
+        products.extend(page_products)
+        page += 1
     return products
