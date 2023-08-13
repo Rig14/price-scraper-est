@@ -44,13 +44,13 @@ def get_products_from_category_url(category_url, page):
         category_url + f"?page={page}&pageSize={PAGE_SIZE}", timeout=10).text
     soup = BeautifulSoup(html, "html.parser")
     category = soup.find("h1").text
-    product_conatiners = soup.find_all(
+    product_containers = soup.find_all(
         "div", {"class": PRODUCT_CONTAINER_CLASS})
 
-    if product_conatiners is None or product_conatiners == []:
+    if product_containers is None or not product_containers:
         return products
 
-    for product in product_conatiners:
+    for product in product_containers:
         name = product.find("p").text
 
         price_conatiner = product.find(
