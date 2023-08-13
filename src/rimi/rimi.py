@@ -2,7 +2,6 @@
 
 from bs4 import BeautifulSoup
 import requests
-import re
 
 from ..util.product import Product, ProductInfo, ProductUnitInfo
 
@@ -31,17 +30,18 @@ def get_category_urls():
 
 
 # page querry for the category page
-PAGE_QUERRY = "?page=1&pageSize=80"
+PAGE_SIZE = 80
 PRODUCT_CONTAINER_CLASS = "card__details"
 PRICE_CONTAINER_CLASS = "price-tag"
 UNIT_PRICE_CLASS = "card__price-per"
 
 
-def get_products_from_category_url(category_url):
+def get_products_from_category_url(category_url, page):
     """Return a list of products from a category url"""
     products = []
 
-    html = requests.get(category_url, timeout=10).text
+    html = requests.get(
+        category_url + f"?page={page}&pageSize={PAGE_SIZE}", timeout=10).text
     soup = BeautifulSoup(html, "html.parser")
     category = soup.find("h1").text
     product_conatiners = soup.find_all(

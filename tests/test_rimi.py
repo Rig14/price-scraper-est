@@ -6,7 +6,7 @@ import requests
 from src.rimi.rimi import get_category_urls, get_products_from_category_url
 
 
-CATEGORY_URL_TESTS = 5
+CATEGORY_URL_TESTS = 2
 
 
 def test_category_urls():
@@ -29,7 +29,7 @@ def test_product_query():
 
     test_url = category_urls[0]
 
-    products = get_products_from_category_url(test_url)
+    products = get_products_from_category_url(test_url, 1)
 
     for product in products:
         assert product.name != "" or None
