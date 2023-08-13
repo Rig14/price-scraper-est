@@ -2,8 +2,9 @@
 
 from bs4 import BeautifulSoup
 import requests
+import re
 
-from ..util.product import Product
+from ..util.product import Product, ProductInfo, ProductUnitInfo
 
 
 BASE_URL = "https://www.rimi.ee"
@@ -52,14 +53,24 @@ def get_products_from_category_url(category_url):
         price_conatiner = product.find(
             "div", {"class": PRICE_CONTAINER_CLASS})
 
+        # price is in the form of price_main.price_decimal
         price_main = int(price_conatiner.find("span").text)
         price_decimal = int(price_conatiner.find("sup").text)
         price = (price_main * 100 + price_decimal) / 100
 
+        # [price, unit]
         unit_price = product.find(
             "p", {"class": UNIT_PRICE_CLASS}).text.replace(" ", "").replace("\n", "").split("€/")
 
-        products.append(
-            Product(name, price, {"price": float(unit_price[0].replace(",", ".")), "unit": unit_price[1]}, category))
+        price_per_unit = float(unit_price[0].replace(",", "."))
+        weight_unit = unit_price[1]
+
+        product_unit_info: ProductUnitInfo = {
+            "price": price_per_unit, "weigth_unit": weight_unit}
+
+        product_info: ProductInfo = {"name": name, "price": price,
+                                     "weight": round(price / price_per_unit, 3 if weight_unit != "tk" else 0), "category": category}
+
+        products.append(Product(product_info, product_unit_info))
 
     return products

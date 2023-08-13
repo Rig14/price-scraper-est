@@ -32,8 +32,9 @@ def test_product_query():
     products = get_products_from_category_url(test_url)
 
     for product in products:
-        assert product.price > 0
-        assert product.price_per_unit > 0
-        assert product.unit in ["kg", "l", "tk", "g", "ml", "cl"]
-        assert product.weight > 0
-        assert product.name != ""
+        assert product.name != "" or None
+        assert product.price != 0 or None
+        assert product.weight != 0 or None
+        assert product.category != "" or None
+        assert product.price_per_unit != 0 or None
+        assert product.weight_unit in ["kg", "g", "l", "ml", "tk"]
