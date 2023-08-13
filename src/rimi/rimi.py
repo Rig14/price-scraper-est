@@ -30,7 +30,7 @@ def get_category_urls():
 
 
 # page querry for the category page
-PAGE_SIZE = 80
+PAGE_SIZE = 100
 PRODUCT_CONTAINER_CLASS = "card__details"
 PRICE_CONTAINER_CLASS = "price-tag"
 UNIT_PRICE_CLASS = "card__price-per"
@@ -75,7 +75,7 @@ def get_products_from_category_url(category_url, page):
             "price": price_per_unit, "weigth_unit": weight_unit}
 
         product_info: ProductInfo = {"name": name, "price": price,
-                                     "weight": round(price / price_per_unit, 3 if weight_unit != "tk" else 0), "category": category}
+                                     "weight": round(price / price_per_unit, 3 if weight_unit != "tk" else 0), "category": category, "store": "rimi"}
 
         products.append(Product(product_info, product_unit_info))
 

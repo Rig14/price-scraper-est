@@ -15,7 +15,7 @@ def test_category_urls():
 
     random.shuffle(category_urls)
 
-    for url in category_urls[:CATEGORY_URL_TESTS]:
+    for url in category_urls[0:CATEGORY_URL_TESTS]:
         request = requests.get(url, timeout=10)
         assert request.status_code == 200
         assert request.url == url
