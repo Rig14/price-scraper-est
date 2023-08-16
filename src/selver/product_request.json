@@ -1,0 +1,36 @@
+{
+    "query": {
+        "bool": {
+            "filter": {
+                "bool": {
+                    "must": [
+                        {
+                            "terms": {
+                                "visibility": [
+                                    2,
+                                    3,
+                                    4
+                                ]
+                            }
+                        },
+                        {
+                            "terms": {
+                                "status": [
+                                    0,
+                                    1
+                                ]
+                            }
+                        },
+                        {
+                            "terms": {
+                                "category_ids": [
+                                    212
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,26 @@
+{
+    "query": {
+        "bool": {
+            "filter": {
+                "bool": {
+                    "must": [
+                        {
+                            "terms": {
+                                "level": [
+                                    4
+                                ]
+                            }
+                        },
+                        {
+                            "terms": {
+                                "is_active": [
+                                    true
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
