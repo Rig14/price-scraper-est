@@ -8,12 +8,15 @@ from src.util.provider import Provider
 
 
 class RimiProvider(Provider):
+    """Rimi webpage scraper (initialization makes 1 request)"""
+
     def __init__(self):
         self._products = []
-        self._progress = 0
         self._use_cache = True
         self._base_url = "https://www.rimi.ee/"
         self._estore_url = self._base_url + "epood"
+        self._category_urls = self._get_category_urls()
+        self._category_urls_scraped = 0
 
     def make_next_request() -> None:
         """Make the next request"""
@@ -25,7 +28,7 @@ class RimiProvider(Provider):
 
     def get_progress(self) -> int:
         """Return the progress"""
-        pass
+        return self._category_urls_scraped * 100 // len(self._category_urls)
 
     def set_use_cache(self, use_cache: bool) -> None:
         """Set False if you dont want to use cache (default: True)"""
