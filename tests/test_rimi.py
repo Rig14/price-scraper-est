@@ -19,3 +19,18 @@ def test_category_urls():
         assert res.status_code == 200
         url_regex = r"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)"
         assert re.match(url_regex, category_urls[i]) is not None
+
+
+def test_make_next_request():
+    """Test making next request"""
+    rimi = RimiProvider()
+    rimi.make_next_request()
+    products = rimi.get_products()
+    for product in products:
+        assert len(product["name"]) > 2
+        assert product["price"] > 0
+        assert product["price_per_unit"] > 0
+        assert product["weight_unit"] in [
+            "kg", "l", "tk", "g", "ml", "cl", "l"]
+        assert product["weight"] > 0
+        assert product["category"] is not None

@@ -9,12 +9,12 @@ class Provider:
     """Provider abstract class"""
 
     @abstractmethod
-    def make_next_request() -> None:
+    def make_next_request(self) -> None:
         """Make the next request"""
         pass
 
     @abstractmethod
-    def get_products(self) -> list[ProductInfo]:
+    def get_products(self) -> list[ProductInfo] | None:
         """Return the products"""
         pass
 
