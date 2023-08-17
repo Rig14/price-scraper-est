@@ -14,7 +14,7 @@ class Cacher:
     """
 
     def __init__(self, cache_file_name: str):
-        self._cache_dir = os.getcwd() + "./EstPriceScraperCache"
+        self._cache_dir = os.path.join(os.getcwd(), ".EstPriceScraperCache")
         self._cache_file = os.path.join(self._cache_dir, cache_file_name)
         self._cache_timeout = 60 * 60 * 24 * 2  # 2 days
 
@@ -23,7 +23,7 @@ class Cacher:
     def _create_cache_dir_if_not_exists(self) -> None:
         """Create cache dir if it does not exist"""
         if not os.path.exists(self._cache_dir):
-            os.makedirs(self._cache_dir)
+            os.mkdir(self._cache_dir)
 
     def set_cache_timeout(self, timeout: int) -> None:
         """Set cache timeout in seconds (default: 2 days)"""
@@ -31,10 +31,14 @@ class Cacher:
 
     def get_cached_products(self) -> list[ProductInfo]:
         """Return cached products"""
+        # check if cache file exists
+        if not os.path.exists(self._cache_file):
+            raise Exception("Cache file does not exist")
+
         with open(self._cache_file, "r", encoding="UTF-8") as cache_file:
             timestamp = int(cache_file.readline().strip())
-            if timestamp + self._cache_timeout > int(time.time()):
-                raise Exception("Cache timeout")
+            if timestamp + self._cache_timeout < int(time.time()):
+                raise Exception("Cache has timed out")
 
             products: list[ProductInfo] = []
             for line in cache_file.readlines():
@@ -45,7 +49,12 @@ class Cacher:
         """Cache products to a file"""
         with open(self._cache_file, "w", encoding="UTF-8") as cache_file:
             # timestamp
-            cache_file.writeline(str(int(time.time())) + "\n")
+            cache_file.writelines(str(int(time.time())) + "\n")
             # products
             for product in products:
-                cache_file.writeline(json.dumps(product) + "\n")
+                cache_file.writelines(json.dumps(product) + "\n")
+
+    def delete_cache(self) -> None:
+        """Delete cache file"""
+        os.remove(self._cache_file) if os.path.exists(
+            self._cache_file) else None
