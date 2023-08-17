@@ -23,6 +23,6 @@ class Provider:
         """Return the progress"""
         pass
 
-    def set_use_cache(self, use_cache: bool = True) -> None:
-        """Set True if you want to use cache (default: True)"""
+    def set_use_cache(self, use_cache: bool) -> None:
+        """Set False if you dont want to use cache (default: True)"""
         pass
