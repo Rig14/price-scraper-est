@@ -1,80 +1,51 @@
-"""Cache the products to a file and get the cached products from the file.
-Can be validated by timestamp and providers.
-Cache file format:
-    timestamp
-    providers
-    products
-"""
+"""Cacher class for caching products to a file"""
 
+import json
 import os
 import time
-from src.util.product import Product
+
+from src.util.product import ProductInfo
 
 
-class Cache:
-    """Cache class"""
+class Cacher:
+    """Cache file structure:
+    (1) timestamp
+    (2..) products
+    """
 
-    def __init__(self, cache_dir):
-        self._cache_dir = cache_dir
-        self._cache_file_name = ".EstPriceScraper.cache"
+    def __init__(self, cache_file_name: str):
+        self._cache_dir = os.getcwd() + "./EstPriceScraperCache"
+        self._cache_file = os.path.join(self._cache_dir, cache_file_name)
         self._cache_timeout = 60 * 60 * 24 * 2  # 2 days
 
-    def cache_products(self, products: list[Product], providers: list[str]):
-        """Cache the products
+        self._create_cache_dir_if_not_exists()
 
-        Parameters:
-            products (list[Product]): the products to cache
-            providers (list[str]): the providers of the products
-        """
-        with open(os.path.join(self._cache_dir, self._cache_file_name), "w", encoding="UTF-8") as file:
-            # timestamp
-            file.write(f"{int(time.time())}\n")
-            # providers
-            file.write(f"{'|'.join(providers)}\n")
-            # products
-            for product in products:
-                file.write(f"{product.get_cacheable()}\n")
+    def _create_cache_dir_if_not_exists(self) -> None:
+        """Create cache dir if it does not exist"""
+        if not os.path.exists(self._cache_dir):
+            os.makedirs(self._cache_dir)
 
-    def get_cache(self, providers: list[str]):
-        """Get the cache
-        Parameters:
-            providers (list[str]): the providers of the products, used to check if the cache is still valid (when the providers change the cache is invalid)
-        Returns:
-            list[Product] | None: the cached products or None if there is no cache
-        """
-        if not os.path.exists(os.path.join(self._cache_dir, self._cache_file_name)):
-            return None
-
-        with open(os.path.join(self._cache_dir, self._cache_file_name), "r", encoding="UTF-8") as file:
-            # timestamp
-            timestamp = int(file.readline().strip())
-            # check if the cache is still valid
-            if int(time.time()) > timestamp + self._cache_timeout:
-                return None
-
-            # providers
-            cache_providers = file.readline().strip().split("|")
-            # check if the providers are the same
-            for provider in providers:
-                if provider not in cache_providers:
-                    return None
-
-            # products
-            products = []
-            for line in file.readlines():
-                products.append(Product.convert_cache_to_product(line.strip()))
-
-            return products
-
-    def set_cache_timeout(self, timeout: int):
-        """Set the cache timeout (default: 2 days)
-
-        Parameters:
-            timeout (int): the timeout in seconds
-        """
+    def set_cache_timeout(self, timeout: int) -> None:
+        """Set cache timeout in seconds (default: 2 days)"""
         self._cache_timeout = timeout
 
-    def delete_cache(self):
-        """Delete the cache file"""
-        if os.path.exists(os.path.join(self._cache_dir, self._cache_file_name)):
-            os.remove(os.path.join(self._cache_dir, self._cache_file_name))
+    def get_cached_products(self) -> list[ProductInfo]:
+        """Return cached products"""
+        with open(self._cache_file, "r", encoding="UTF-8") as cache_file:
+            timestamp = int(cache_file.readline().strip())
+            if timestamp + self._cache_timeout > int(time.time()):
+                raise Exception("Cache timeout")
+
+            products: list[ProductInfo] = []
+            for line in cache_file.readlines():
+                products.append(json.loads(line.strip()))
+            return products
+
+    def cache_products(self, products: list[ProductInfo]) -> None:
+        """Cache products to a file"""
+        with open(self._cache_file, "w", encoding="UTF-8") as cache_file:
+            # timestamp
+            cache_file.writeline(str(int(time.time())) + "\n")
+            # products
+            for product in products:
+                cache_file.writeline(json.dumps(product) + "\n")

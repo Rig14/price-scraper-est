@@ -19,6 +19,10 @@ class Provider:
         pass
 
     @abstractmethod
-    def get_progress(self) -> range(100):
+    def get_progress(self) -> int:
         """Return the progress"""
+        pass
+
+    def set_use_cache(self, use_cache: bool = True) -> None:
+        """Set True if you want to use cache (default: True)"""
         pass
