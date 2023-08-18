@@ -33,6 +33,8 @@ class RimiProvider(Provider):
 
         self._products.extend(products)
 
+        self._page_index += 1
+
     def get_products(self) -> list[ProductInfo] | None:
         """Return the products"""
         if self._products:
@@ -124,3 +126,7 @@ class RimiProvider(Provider):
             products.append(product)
 
         return products
+
+    def delete_cache(self) -> None:
+        """Delete the cache file"""
+        Cacher(self._cache_file_name).delete_cache()

@@ -24,6 +24,7 @@ def test_category_urls():
 def test_make_next_request():
     """Test making next request"""
     rimi = RimiProvider()
+
     rimi.make_next_request()
     products = rimi.get_products()
     for product in products:
@@ -34,3 +35,31 @@ def test_make_next_request():
             "kg", "l", "tk", "g", "ml", "cl", "l"]
         assert product["weight"] > 0
         assert product["category"] is not None
+
+    # products from cache
+    cache_products = rimi.get_products()
+    assert products == cache_products
+
+    rimi.delete_cache()
+
+
+def test_make_next_request_10():
+    """Test making next request 10 times"""
+    rimi = RimiProvider()
+
+    for _ in range(10):
+        rimi.make_next_request()
+        products = rimi.get_products()
+        for product in products:
+            assert len(product["name"]) > 2
+            assert product["price"] > 0
+            assert product["price_per_unit"] > 0
+            assert product["weight_unit"] in [
+                "kg", "l", "tk", "g", "ml", "cl", "l"]
+            assert product["weight"] > 0
+            assert product["category"] is not None
+
+    # products from cache
+    rimi2 = RimiProvider()
+    cache_products = rimi2.get_products()
+    assert products == cache_products
