@@ -23,13 +23,19 @@
                         },
                         {
                             "terms": {
-                                "category_ids": [
-                                    212
-                                ]
+                                "category_ids": []
                             }
                         }
                     ]
                 }
+            }
+        }
+    },
+    "aggs": {
+        "agg_terms_product_main_ecategory": {
+            "terms": {
+                "field": "product_main_ecategory",
+                "size": 100
             }
         }
     }
