@@ -23,6 +23,7 @@ class Provider:
         """Return the progress"""
         pass
 
+    @abstractmethod
     def set_use_cache(self, use_cache: bool) -> None:
         """Set False if you dont want to use cache (default: True)"""
         pass
